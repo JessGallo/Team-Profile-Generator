@@ -6,6 +6,8 @@ const Manager = require('./lib/Manager');
 const Engineer = require('./lib/Engineer');
 const Intern = require('./lib/Intern');
 
+const generateHTML = require('./src/generateHTML');
+
 const teamArray = [];
 
 const promptUser = () => {
@@ -72,6 +74,11 @@ const promptUser = () => {
 };
 
 const promptEmployee = () => {
+    console.log(`
+    ==========================
+    Add employees to the team
+    ==========================
+    `)
     return inquirer.prompt([
         {
             type: 'list',
@@ -121,7 +128,7 @@ const promptEmployee = () => {
         {
             type: 'input',
             name: 'github',
-            message: "Wha tis the employee's GitHub username?",
+            message: "What is the employee's GitHub username?",
             validate: githubInput =>  {
                 if (githubInput) {
                     return true;
@@ -153,7 +160,7 @@ const promptEmployee = () => {
         }
     ])
     .then(employeeData => {
-        let { name, id, email, role, github, school, confrimPromptEmployee } = employeeData;
+        let { name, id, email, role, github, school, confirmPromptEmployee } = employeeData;
         let employee;
 
         if (role === "Engineer") {
@@ -164,10 +171,49 @@ const promptEmployee = () => {
 
         teamArray.push(employee);
 
-        if (comfirmPromptEmployee) {
+        if (confirmPromptEmployee) {
             return promptEmployee(teamArray);
         } else {
             return teamArray;
         }
     })
 };
+
+const writeFile = data => {
+    fs.writeFile('./dist/index.html', data, err => {
+        if (err) {
+            console.log(err);
+            return;
+        } else {
+            console.log("Your team profile has been successfully created!");
+        }
+    })
+}; 
+
+const copyFile = () => {
+    return new Promise((resolve, reject) => {
+      fs.copyFile('./src/style.css', './dist/style.css', err => {
+        if (err) {
+          reject(err);
+          return;
+        }
+  
+        resolve({
+          ok: true,
+          message: 'Stylesheet created!'
+        });
+      });
+    });
+  };
+
+promptUser()
+.then(promptEmployee)
+.then(teamArray => {
+    return generateHTML(teamArray);
+})
+.then(pageHTML => {
+    return writeFile(pageHTML);
+})
+.catch(err => {
+    console.log(err);
+})
