@@ -28,3 +28,4 @@ THEN I exit the application, and the HTML is generated
 ![mock-up](./assets/mock-up.png)
 
 ## Walkthrough Video
+https://drive.google.com/file/d/1s0Rm5NCT8uXLmbpxCbLHbzdBrW8pytCZ/view
